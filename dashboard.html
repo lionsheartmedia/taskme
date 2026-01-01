@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#8b5cf6">
+  <meta name="description" content="TodoFusion Dashboard - Manage your tasks efficiently">
+  <title>Dashboard - TodoFusion</title>
+  
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Google Fonts (Inter) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="styles/main.css">
+  
+  <style>
+    /* Dashboard-specific styles */
+    .task-item {
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+      transition: var(--transition-fast);
+      cursor: pointer;
+    }
+    
+    .task-item:hover {
+      border-color: var(--color-accent-primary);
+      transform: translateX(4px);
+    }
+    
+    .task-item.completed {
+      opacity: 0.6;
+    }
+    
+    .task-item.completed .task-item__title {
+      text-decoration: line-through;
+      color: var(--color-text-tertiary);
+    }
+    
+    .task-item__header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .task-item__checkbox {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .task-item__content {
+      flex: 1;
+    }
+    
+    .task-item__title {
+      font-weight: var(--font-weight-medium);
+      margin-bottom: var(--space-xs);
+    }
+    
+    .task-item__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .task-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--space-4xl) var(--space-xl);
+      color: var(--color-text-secondary);
+    }
+    
+    .empty-state__icon {
+      font-size: 48px;
+      margin-bottom: var(--space-lg);
+      opacity: 0.5;
+    }
+    
+    .sidebar-list-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      margin-bottom: var(--space-xs);
+    }
+    
+    .sidebar-list-item:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+    
+    .sidebar-list-item.active {
+      background-color: var(--color-accent-primary);
+      color: white;
+    }
+    
+    .sidebar-list-item__icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .sidebar-list-item__name {
+      flex: 1;
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .sidebar-list-item__count {
+      font-size: var(--font-size-sm);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" id="sidebar">
+      <div class="flex items-center justify-between mb-xl">
+        <h2 class="m-0 text-xl font-bold">
+          <span style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">TodoFusion</span>
+        </h2>
+        <button id="themeToggle" class="btn btn--icon btn--ghost" aria-label="Toggle theme">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path class="sun-icon" d="M10 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm5.657 1.757a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-1.757 5.657a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 17a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zm-5.657-1.757a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1zm1.757-5.657a1 1 0 010 1.414l-.707.707A1 1 0 112.636 5.05l.707-.707a1 1 0 011.414 0z"/>
+            <path class="moon-icon" style="display: none;" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Quick Add Task -->
+      <button class="btn btn--primary w-full mb-xl" id="newTaskBtn">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 5v10m-5-5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        New Task
+      </button>
+
+      <!-- Task Lists -->
+      <div class="mb-xl">
+        <h3 class="text-sm uppercase text-tertiary mb-md">Lists</h3>
+        <nav id="taskListsNav">
+          <div class="sidebar-list-item active" data-filter="all">
+            <div class="sidebar-list-item__icon">📋</div>
+            <div class="sidebar-list-item__name">All Tasks</div>
+            <div class="sidebar-list-item__count" id="allTasksCount">0</div>
+          </div>
+          <div class="sidebar-list-item" data-filter="today">
+            <div class="sidebar-list-item__icon">📅</div>
+            <div class="sidebar-list-item__name">Today</div>
+            <div class="sidebar-list-item__count" id="todayTasksCount">0</div>
+          </div>
+          <div class="sidebar-list-item" data-filter="upcoming">
+            <div class="sidebar-list-item__icon">🔜</div>
+            <div class="sidebar-list-item__name">Upcoming</div>
+            <div class="sidebar-list-item__count" id="upcomingTasksCount">0</div>
+          </div>
+          <div class="sidebar-list-item" data-filter="completed">
+            <div class="sidebar-list-item__icon">✅</div>
+            <div class="sidebar-list-item__name">Completed</div>
+            <div class="sidebar-list-item__count" id="completedTasksCount">0</div>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Priority Filters -->
+      <div class="mb-xl">
+        <h3 class="text-sm uppercase text-tertiary mb-md">Priority</h3>
+        <nav id="priorityNav">
+          <div class="sidebar-list-item" data-priority="high">
+            <div class="sidebar-list-item__icon">🔴</div>
+            <div class="sidebar-list-item__name">High Priority</div>
+            <div class="sidebar-list-item__count" id="highPriorityCount">0</div>
+          </div>
+          <div class="sidebar-list-item" data-priority="medium">
+            <div class="sidebar-list-item__icon">🟡</div>
+            <div class="sidebar-list-item__name">Medium Priority</div>
+            <div class="sidebar-list-item__count" id="mediumPriorityCount">0</div>
+          </div>
+          <div class="sidebar-list-item" data-priority="low">
+            <div class="sidebar-list-item__icon">🟢</div>
+            <div class="sidebar-list-item__name">Low Priority</div>
+            <div class="sidebar-list-item__count" id="lowPriorityCount">0</div>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Back to Home -->
+      <div class="border-t pt-md">
+        <a href="index.html" class="btn btn--ghost w-full">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 19l-7-7 7-7M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Back to Home
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main" id="main-content">
+      <!-- Header -->
+      <div class="task-list-header">
+        <div>
+          <h1 class="m-0 mb-xs" id="currentViewTitle">All Tasks</h1>
+          <p class="text-secondary text-sm m-0" id="currentViewSubtitle">Manage and organize your tasks</p>
+        </div>
+        <div class="flex gap-md items-center">
+          <div class="input-group mb-0" style="width: 250px;">
+            <input 
+              type="search" 
+              class="input" 
+              placeholder="Search tasks..." 
+              id="searchInput"
+              aria-label="Search tasks"
+            >
+          </div>
+          <div class="dropdown" id="sortDropdown">
+            <button class="btn btn--outline">
+              Sort
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4 6l4 4 4-4"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert Panel (Tasks Due Now) -->
+      <div id="alertPanel" class="alert alert--warning" style="display: none;">
+        <div>
+          <strong>Tasks Due Now:</strong>
+          <span id="alertTasksList"></span>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="document.getElementById('alertPanel').style.display='none'">
+          Dismiss
+        </button>
+      </div>
+
+      <!-- Task List -->
+      <div id="taskList">
+        <!-- Tasks will be rendered here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state">
+        <div class="empty-state__icon">📝</div>
+        <h3 class="mb-md">No tasks yet</h3>
+        <p class="text-secondary mb-lg">Create your first task to get started</p>
+        <button class="btn btn--primary" onclick="document.getElementById('newTaskBtn').click()">
+          Create Task
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Task Modal -->
+  <div class="modal-overlay" id="taskModal">
+    <div class="modal" role="dialog" aria-labelledby="taskModalTitle">
+      <div class="modal__header">
+        <h2 class="modal__title" id="taskModalTitle">New Task</h2>
+        <button class="modal__close btn btn--ghost btn--icon" aria-label="Close modal">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M6 6l8 8m0-8l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <form id="taskForm">
+          <div class="input-group">
+            <label for="taskTitle">Task Title*</label>
+            <input 
+              type="text" 
+              id="taskTitle" 
+              class="input" 
+              placeholder="Enter task title"
+              required
+              aria-required="true"
+            >
+          </div>
+
+          <div class="input-group">
+            <label for="taskDescription">Description</label>
+            <textarea 
+              id="taskDescription" 
+              class="input" 
+              rows="3"
+              placeholder="Add task details..."
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-md">
+            <div class="input-group">
+              <label for="taskDueDate">Due Date</label>
+              <input 
+                type="date" 
+                id="taskDueDate" 
+                class="input"
+              >
+            </div>
+
+            <div class="input-group">
+              <label for="taskPriority">Priority</label>
+              <select id="taskPriority" class="input">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="taskTags">Tags (comma separated)</label>
+            <input 
+              type="text" 
+              id="taskTags" 
+              class="input" 
+              placeholder="work, personal, urgent"
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--outline" type="button" id="cancelTaskBtn">Cancel</button>
+        <button class="btn btn--primary" type="submit" form="taskForm">Save Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/database.js"></script>
+  <script src="js/models/Task.js"></script>
+  <script src="js/services/TaskService.js"></script>
+  <script src="js/components/TaskListView.js"></script>
+  <script src="js/components/ModalManager.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
